@@ -17,16 +17,33 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import InputLabel from '@material-ui/core/InputLabel';
 import Box from '@material-ui/core/Box';
 import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import FormControl from '@material-ui/core/FormControl';
 
 const useStyle = makeStyles({
     paper: {
-        padding: '30px'
+        padding: '50px 30px 30px 30px',
+        marginTop: '40px',
+        position: 'relative',
+        border: '1px solid #3f51b5'
+    },
+    infoHeader: {
+        width: '70%',
+        fontSize: '20px',
+        padding: '25px',
+        position: 'absolute',
+        top: '-35px',
+        left: '50%',
+        backgroundColor: '#3f51b5',
+        color: '#fafafa',
+        transform: 'translateX(-50%)'
     },
     avatar: {
         position: 'relative',
         width: '150px',
         height: '150px',
-        top: '-25px',
+        top: '-80px',
         left: '50%',
         transform: 'translateX(-50%)',
         boxShadow: '0px 2px 21px -4px rgba(0,0,0,0.7);'
@@ -45,6 +62,9 @@ const useStyle = makeStyles({
         width: '45%',
         position: 'relative'
     },
+    textFieldFullWidth: {
+        width: '100%'
+    },
     password: {
         letterSpacing: '3px'
     },
@@ -53,19 +73,60 @@ const useStyle = makeStyles({
         right: '0px',
         bottom: '10px',
         cursor: 'pointer'
+    },
+    modal: {
+        width: '400px',
+        height: '400px',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)'
+    },
+    modalHeader: {
+        padding: '30px',
+        backgroundColor: '#3f51b5',
+        color: '#fafafa'
+    },
+    modalInput: {
+        width: '100%',
+        padding: '20px 30px',
+        position: 'relative'
+    },
+    modalInputIcon: {
+        cursor: 'pointer',
+        position: 'absolute',
+        right: '27px',
+        bottom: '28px'
+    },
+    buttonContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '0px 30px'
+    },
+    modalButtons: {
+        width: '46%',
+        padding: '10px 0px'
     }
 })
-// width: 400px;
-//     height: 400px;
-//     padding: 30px;
-//     position: absolute;
-//     top: 50%;
-//     left: 50%;
-//     transform: translate(-50%,-50%);
+
+interface IRole {
+    value: string | number
+    name: string
+}
 
 const Profile = (): JSX.Element => {
     const classes = useStyle();
-    const [modal, setModal] = useState<boolean>(true)
+    const [modal, setModal] = useState<boolean>(false)
+    const [role, setRole] = useState<IRole>({ value: 0, name: "" })
+    const [showPassword, setShowPassword] = useState<boolean>(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
+
+    const handleChange = (name: string) => (
+        event: React.ChangeEvent<{ value: number | string }>
+    ) => {
+        event.persist()
+        setRole({ ...role, value: event.target.value })
+    }
 
     const handleOpen = () => {
         setModal(true)
@@ -75,10 +136,29 @@ const Profile = (): JSX.Element => {
         setModal(false)
     }
 
+    const handleShowPassword = () => {
+        setShowPassword(true)
+    }
+
+    const hideShowPassword = () => {
+        setShowPassword(false)
+    }
+
+    const handleShowConfirmPassword = () => {
+        setShowConfirmPassword(true)
+    }
+
+    const hideShowConfirmPassword = () => {
+        setShowConfirmPassword(false)
+    }
+
     return (
         <Grid container justify="space-between">
             <Grid item sm={8}>
                 <Paper className={classes.paper}>
+                    <Paper className={classes.infoHeader}>
+                        Profile Information
+                    </Paper>
                     <Container>
                         <Box display="flex" justifyContent="space-between">
                             <FormGroup className={classes.firstName}>
@@ -91,7 +171,6 @@ const Profile = (): JSX.Element => {
                                         readOnly: true,
                                     }}
                                 />
-                                <EditIcon className={classes.icon} />
                             </FormGroup>
                             <TextField
                                 id="standard-read-only-input"
@@ -141,7 +220,7 @@ const Profile = (): JSX.Element => {
                                         }
                                     }}
                                 />
-                                <EditIcon className={classes.icon} />
+                                <EditIcon className={classes.icon} onClick={handleOpen} />
                             </FormGroup>
                             <Modal
                                 aria-labelledby="title"
@@ -149,14 +228,14 @@ const Profile = (): JSX.Element => {
                                 open={modal}
                                 onClose={handleClose}
                             >
-                                <Paper>
-                                    <h2 id="title">Change Password</h2>
-                                    <FormGroup className={classes.textFieldHalfWidth}>
+                                <Paper className={classes.modal}>
+                                    <h2 id="title" className={classes.modalHeader}>Change Password</h2>
+                                    <FormGroup className={classes.modalInput}>
                                         <TextField
                                             id="standard-password-input"
                                             label="New Password"
-                                            type="password"
-                                            value="wayandanyaeleco"
+                                            type={showPassword ? "text" : "password"}
+                                            value=""
                                             autoComplete="current-password"
                                             margin="normal"
                                             InputProps={{
@@ -165,14 +244,14 @@ const Profile = (): JSX.Element => {
                                                 }
                                             }}
                                         />
-                                        <EditIcon className={classes.icon} />
+                                        {showPassword ? <VisibilityOffIcon className={classes.modalInputIcon} onClick={hideShowPassword} /> : <VisibilityIcon className={classes.modalInputIcon} onClick={handleShowPassword} />}
                                     </FormGroup>
-                                    <FormGroup className={classes.textFieldHalfWidth}>
+                                    <FormGroup className={classes.modalInput}>
                                         <TextField
                                             id="standard-password-input"
                                             label="Confirm Password"
-                                            type="password"
-                                            value="wayandanyaeleco"
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            value=""
                                             autoComplete="current-password"
                                             margin="normal"
                                             InputProps={{
@@ -181,25 +260,30 @@ const Profile = (): JSX.Element => {
                                                 }
                                             }}
                                         />
-                                        <EditIcon className={classes.icon} />
-                                    </FormGroup> 
+                                        {showConfirmPassword ? <VisibilityOffIcon className={classes.modalInputIcon} onClick={hideShowConfirmPassword} /> : <VisibilityIcon className={classes.modalInputIcon} onClick={handleShowConfirmPassword} />}
+                                    </FormGroup>
+                                    <div className={classes.buttonContainer}>
+                                        <Button onClick={handleClose} size="medium" color="primary" variant="contained" className={classes.modalButtons}>Save</Button>
+                                        <Button onClick={handleClose} size="medium" color="default" variant="contained" className={classes.modalButtons}>Cancel</Button>
+                                    </div>
                                 </Paper>
                             </Modal>
                         </Box>
                         <Box display="flex">
-                            <FormGroup className={classes.formGroup}>
-                                <InputLabel htmlFor="age-simple">Age</InputLabel>
-                                <Select
-                                    inputProps={{
-                                        name: 'age',
-                                        id: 'age-simple',
-                                    }}
+                            <FormControl className={classes.textFieldFullWidth}>
+                                <NativeSelect
+                                    value={role.value}
+                                    onChange={handleChange('role')}
+                                    name="role"
+                                    inputProps={{ 'aria-label': 'role' }}
                                 >
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
-                                </Select>
-                            </FormGroup>
+                                    <option value={0} disabled>
+                                        Role </option>
+                                    <option value={1}>Safelane</option>
+                                    <option value={2}>Midlane</option>
+                                    <option value={3}>Offlane</option>
+                                </NativeSelect>
+                            </FormControl>
                         </Box>
                     </Container>
                 </Paper>
@@ -207,9 +291,13 @@ const Profile = (): JSX.Element => {
             <Grid item sm={3}>
                 <Paper className={classes.paper}>
                     <Avatar alt="Profile Picture" src={profile} className={classes.avatar} />
+                    <div>
+                        <h2>Motto:</h2>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas ratione, aliquam ut eveniet eum commodi sapiente officiis doloremque rem nemo?</p>
+                    </div>
                 </Paper>
             </Grid>
-        </Grid>
+        </Grid >
     )
 }
 
